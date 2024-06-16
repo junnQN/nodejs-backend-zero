@@ -3,7 +3,7 @@ const {getAllUsers, getUserById, updateUserById, deleteUserById} = require('../s
 
 const User = require('../models/user')
 const getHomepage = async (req, res) => {
-    let results = [];
+    let results = await User.find({});
     return res.render('home', { listUsers: results}) // x <- y
 }
 
@@ -20,14 +20,6 @@ const postCreateUser = async (req, res) => {
     let name = req.body.myname
     let city = req.body.city
 
-    console.log(">>> email = ", email, 'name = ', name, 'city = ', city)
-
-    //let { email, name, city} = req.body
-
-    /*let [results, fields] = await connection.query(
-        `INSERT INTO Users (email,name,city) VALUES (?,?,?)`, [email, name, city],
-    )*/
-
     await User.create({
         email: email,
         name: name,
@@ -43,8 +35,8 @@ const getCreatePage = (req, res) => {
 
 const getUpdatePage = async (req, res) => {
     const userId = req.params.id
-    let user= await getUserById(userId)
-
+    //let user= await getUserById(userId)
+    let user = await User.findById(userId).exec();
     res.render('edit.ejs', {userEdit : user}) // x <- y
 }
 
@@ -55,11 +47,9 @@ const postUpdateUser = async (req, res) => {
     let city = req.body.city
     let userId = req.body.userId
 
-    console.log(">>> email: ", email, 'name: ', name, 'city: ', city, 'userId= ', userId)
+    //await updateUserById(email, city, name, userId)
 
-    await updateUserById(email, city, name, userId)
-
-    //res.send('Updated user succeed!')
+    await User.updateOne({_id: userId}, {email: email, name: name, city: city})
     res.redirect('/')
 }
 
