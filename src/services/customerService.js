@@ -1,4 +1,5 @@
 const Customer = require("../models/customer");
+const res = require("express/lib/response");
 
 const createCustomerService = async (customerData) => {
     try {
@@ -17,6 +18,17 @@ const createCustomerService = async (customerData) => {
     }
 }
 
+const createArrayCustomerService = async (arr) => {
+    try{
+        let result = await Customer.insertMany(arr)
+        return result
+    } catch (error){
+        console.log(error);
+        return null;
+    }
+}
+
 module.exports = {
-    createCustomerService
+    createCustomerService,
+    createArrayCustomerService
 }
