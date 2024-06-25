@@ -14,10 +14,18 @@ const customerSchema
         image: String,
         description: String,
     },
-    {timestamps: true}
+    {
+        timestamps: true,
+        statics: {
+            findByJunny(name) {
+                return this.find({name: new RegExp(name, 'i')});
+            },
+
+        }
+    }
 );
 
-customerSchema.plugin(mongoose_delete, { overrideMethods: 'all' });
+customerSchema.plugin(mongoose_delete, {overrideMethods: 'all'});
 
 const Customer = mongoose.model('Customer', customerSchema);
 

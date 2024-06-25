@@ -3,7 +3,7 @@ const {uploadSingleFile} = require("../services/fileService");
 const {
     createCustomerService,
     createArrayCustomerService,
-    getAllCustomerService, putUpdateCustomerService, deleteCustomerService
+    getAllCustomerService, putUpdateCustomerService, deleteCustomerService, deleteArrayCustomerService
 } = require("../services/customerService");
 
 module.exports = {
@@ -76,6 +76,16 @@ module.exports = {
     deleteCustomer: async (req, res) => {
         let id = req.body.id
         let result = await deleteCustomerService(id)
+        return res.status(200).json(
+            {
+                errorCode: 0,
+                data: result
+            }
+        )
+    },
+    deleteArrayCustomer: async (req, res) => {
+        let ids = req.body.customersId;
+        let result = await deleteArrayCustomerService(ids)
         return res.status(200).json(
             {
                 errorCode: 0,
