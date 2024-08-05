@@ -6,8 +6,6 @@ const {
     getAllCustomerService, putUpdateCustomerService, deleteCustomerService, deleteArrayCustomerService
 } = require("../services/customerService");
 
-const aqp = require('api-query-params');
-
 module.exports = {
     postCreateCustomer: async (req, res) => {
         let {name, address, phone, email, description} = req.body;
