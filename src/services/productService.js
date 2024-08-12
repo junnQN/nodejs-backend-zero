@@ -15,16 +15,41 @@ module.exports = {
             let newResult = await myProject.save()
             return newResult
         }
+        if (data.type === "REMOVE-USERS") {
+            let myProject = await Project.findById(data.projectId).exec();
+
+            /*myProject.usersInfor =
+                myProject.usersInfor.filter(item => !data.userArr.includes(item));
+
+            console.log(">>> myProject.usersInfor ", myProject.usersInfor, data.usersArr);*/
+
+            for (let i = 0; i < data.usersArr.length; i++) {
+                myProject.usersInfor.pull(data.usersArr[i]);
+            }
+
+            let newResult = await myProject.save();
+            return newResult;
+        }
         return null
     },
     getProject: async (queryString) => {
         const page = queryString.page
-        const {filter, limit} = aqp(queryString);
-        console.log("before", filter)
+        const {filter, limit, population} = aqp(queryString);
         delete filter.page
-        console.log("after", filter)
+
         let offset = (page - 1) * limit;
         result = await Project.find(filter).populate('usersInfor').skip(offset).limit(limit).exec();
-        return result
-    }
+        return result;
+    },
+
+    uProject: async (data) => {
+        let result =
+            await Project.updateOne({_id: data.id}, { ...data});
+        return result;
+    },
+
+    dProject: async (id) => {
+        let result = await Project.deleteById(id);
+        return result;
+    },
 }
