@@ -30,6 +30,14 @@ module.exports = {
             let newResult = await myProject.save();
             return newResult;
         }
+        if(data.type === "ADD-TASKS") {
+            let myProject = await Project.findById(data.projectId).exec();
+            for (let i = 0; i < data.tasksArr.length; i++) {
+                myProject.tasks.push(data.tasksArr[i])
+            }
+            let newResult = await myProject.save()
+            return newResult
+        }
         return null
     },
     getProject: async (queryString) => {
@@ -38,7 +46,7 @@ module.exports = {
         delete filter.page
 
         let offset = (page - 1) * limit;
-        result = await Project.find(filter).populate('usersInfor').skip(offset).limit(limit).exec();
+        result = await Project.find(filter).populate(population).skip(offset).limit(limit).exec();
         return result;
     },
 
