@@ -5,36 +5,58 @@ const {
     createArrayCustomerService,
     getAllCustomerService, putUpdateCustomerService, deleteCustomerService, deleteArrayCustomerService
 } = require("../services/customerService");
+const Joi = require("joi");
 
 module.exports = {
     postCreateCustomer: async (req, res) => {
         let {name, address, phone, email, description} = req.body;
 
-        let imageUrl = ""
-        if (!req.files || Object.keys(req.files).length === 0) {
-            // Do nothing
+        const schema = Joi.object({
+            username: Joi.string()
+                .alphanum()
+                .min(3)
+                .max(30)
+                .required(),
+
+            address: Joi.string(),
+
+            phone: Joi.string()
+                .pattern(new RegExp('^[0-9]{8,11}$')),
+
+            email: Joi.string().email(),
+
+            description: Joi.string(),
+        })
+        const {error} = schema.validate(req.body, {abortEarly: false});
+        if (error) {
+            // return error
         } else {
-            let result = await uploadSingleFile(req.files.image);
-            imageUrl = result.path
-        }
-
-        let customerData = {
-            name,
-            address,
-            phone,
-            email,
-            description,
-            image: imageUrl
-        }
-
-        let customer = await createCustomerService(customerData);
-
-        return res.status(200).json(
-            {
-                errorCode: 0,
-                data: customer
+            let imageUrl = ""
+            if (!req.files || Object.keys(req.files).length === 0) {
+                // Do nothing
+            } else {
+                let result = await uploadSingleFile(req.files.image);
+                imageUrl = result.path
             }
-        )
+
+            let customerData = {
+                name,
+                address,
+                phone,
+                email,
+                description,
+                image: imageUrl
+            }
+
+            let customer = await createCustomerService(customerData);
+
+            return res.status(200).json(
+                {
+                    errorCode: 0,
+                    data: customer
+                }
+            )
+        }
     },
     postCreateArrayCustomer: async (req, res) => {
         let customers = await createArrayCustomerService(req.body.customers);
@@ -57,11 +79,11 @@ module.exports = {
     getAllCustomers: async (req, res) => {
 
         let limit = req.query.limit;
-        let page= req.query.page;
+        let page = req.query.page;
         let name = req.query.name;
         let result = null;
 
-        if(limit && page){
+        if (limit && page) {
             result = await getAllCustomerService(limit, page, name, req.query)
         } else
             result = await getAllCustomerService()
